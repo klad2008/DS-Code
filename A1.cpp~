@@ -1,25 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int name, N;
-
-const double eps = 1e-3;
 const double pi = acos(-1.0);
-
-class route_rec{
-	public:
-	int id;
-	int year, month, date;
-	int hour, minute, second;
-	double longitude, latitude;
-	double speed, direction;
-	bool takein, takeoff;
-}Route[10010];
-
-class driver_rec{
-	public:
-	double income, outcome, profit, dis_All, dis_takeIn, dis_takeOff;
-}Driver[10010];
 
 double dist(const route_rec &A, const route_rec &B){
 	double longitude_delta = fabs(A.longitude - B.longitude);
@@ -51,18 +33,17 @@ void int2str(const int &x, string &s_tmp){
 
 void Divide(const string &s_in){
 	stringstream stream;
-	string s;
 	char ch;
 	int xx;
 	
 	stream << s;
 	++N;
-	stream >> Route[N].id >> ch;
-	stream >> Route[N].year >> ch;
-	stream >> Route[N].month >> ch;
-	stream >> Route[N].date >> ch;
-	stream >> Route[N].hour >> ch;
-	stream >> Route[N].minute >> ch;
+	stream >> Route[N].id;
+	stream >> ch >> year;
+	stream >> ch >> month;
+	stream >> ch >> date;
+	stream >> Route[N].Hour >> ch;
+	stream >> Route[N].Minute >> ch;
 	stream >> Route[N].second >> ch;
 	stream >> ch;
 	stream >> Route[N].longitude >> ch;
@@ -82,13 +63,10 @@ void Divide(const string &s_in){
 }
 
 void File_prepare(){
-	char[110] File_In, File_Out;
-	File_In = "[part-00000][";
-	File_Out = "[part-00000][";
-	
-	int2str(name, name_s);
-	File_In =  + name_s + "]Sample.csv";
-	File_Out = "[part-00000][" + name_s + "]Sample.out";
+	string File_In, File_Out;
+	string name_s = int2str(name);
+	File_In = "[part-00000][" + name_s + "]Sample.csv"
+	File_Out = "[part-00000][" + name_s + "]Sample.out"
 	freopen(File_In, "r", stdin);
 	freopen(File_Out, "w", stdout);
 }
@@ -112,7 +90,7 @@ void Data_clean(){
 void Work(const int &name){
 	bool taked = 0;
 	double dis = 0;
-	driver_rec * Now;
+	dri_rec * Now;
 	(*Now).income = 0;
 	(*Now).outcome = 0;
 	(*Now).profit = 0;
