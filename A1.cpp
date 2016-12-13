@@ -9,6 +9,7 @@ const double pi = acos(-1.0);
 
 const char File_Name_Pre[20] = "[part-00000][";
 const char File_Name_Suc[20] = "]Sample";
+const char File_std_Out[20] = "DSA1.out";
 
 class route_rec{
 	public:
@@ -18,12 +19,49 @@ class route_rec{
 	double longitude, latitude;
 	double speed, direction, satellite;
 	bool takein, takeoff;
+	void clear(){
+		memset(this, 0, sizeof(*this));
+	}
 }Route[10010];
 
 class driver_rec{
 	public:
 	double income, outcome, profit, dis_All, dis_takeIn, dis_takeOff;
-}Driver[10010];
+	void clear(){
+		memset(this, 0, sizeof(*this));
+	}
+	void priln(){
+		printf("Income : %lf\n", this -> income);
+		printf("outcome : %lf\n", this -> outcome);
+		printf("profit : %lf\n", this -> profit);
+		printf("dis_All : %lf\n", this -> dis_All);
+		printf("dis_takeIn : %lf\n", this -> dis_takeIn);
+		printf("dis_takeOff : %lf\n", this -> dis_takeOff);
+	}
+}Driver[20010];
+
+class business_rec{
+	public:
+	int hour, minute, second;
+	double longitude, latitude;
+	double income, outcome, profit, dis_takeIn;
+	void priln(){
+		printf("hour : %d\n", this -> hour);
+		printf("minute : %d\n", this -> minute);
+		printf("second : %d\n", this -> second);
+		printf("longitude : %lf\n", this -> longitude);
+		printf("latitude : %lf\n", this -> latitude);
+		printf("income : %lf\n", this -> income);
+		printf("outcome : %lf\n", this -> outcome);
+		printf("profit : %lf\n", this -> profit);
+		printf("dis_takeIn : %lf\n", this -> dis_takeIn);
+	}
+	void clear(){
+		memset(this, 0, sizeof(*this));
+	}
+}busi_p;
+
+vector <business_rec> Business;
 
 void Merge(route_rec &A, route_rec B){
 	if (B.takein){
@@ -65,6 +103,7 @@ void Divide(const string &s_in){
 	
 	stream << s_in;
 	++N;
+	Route[N].clear();
 	stream >> Route[N].id >> ch;
 	if (Route[N].id == 0){
 		N--;
@@ -130,7 +169,7 @@ void File_prepare(const int name){
 	r += 4;
 	File_In[r] = File_Out[r] = 0;
 	freopen(File_In, "r", stdin);
-	freopen(File_Out, "w", stdout);
+//	freopen(File_Out, "w", stdout);
 }
 
 void Read_Line(string &s){
@@ -170,23 +209,13 @@ void Data_clean(){
 void Work(const int &name){
 	bool taked = 0;
 	double dis = 0;
-	driver_rec &Now = Driver[name];
-	Now.income = 0;
-	Now.outcome = 0;
-	Now.profit = 0;
-	Now.dis_All = 0;
-	Now.dis_takeIn = 0;
-	Now.dis_takeOff = 0;
 	double dd = 0;
-	int step = 0;
+	driver_rec &Now = Driver[name];
+	Now.clear();
+	Business.clear();
 	for (int i = 1; i <= N; i++){
 		if (i > 1) dd = dist(Route[i - 1], Route[i]);
 		else dd = 0;
-/*		double ssd = Speed(Route[i - 1], Route[i]);
-		if (dist_time(Route[i - 1], Route[i]) < 1)
-			ssd = 0;
-		if (i > 1 && fabs(ssd - Route[i].speed) > 10)
-			printf("= =");*/
 		if (taked == 1){
 			dis += dd;
 			Now.dis_takeIn += dd;
@@ -194,11 +223,15 @@ void Work(const int &name){
 		else Now.dis_takeOff += dd;
 		Now.dis_All += dd;
 		if (Route[i].takeoff){
-			step++;
 			if (dis > eps){
 				double res = 14;
 				if (dis > 3000) res = res + (dis - 3000) / 1000 * 2.4;
 				Now.income += res;
+				busi_p.dis_takeIn = dis;
+				busi_p.income = res;
+				busi_p.outcome = dis * 0.5 / 1000;
+				Business.push_back(busi_p);
+				busi_p.clear();
 			}
 			taked = 0;
 			dis = 0;
@@ -206,24 +239,35 @@ void Work(const int &name){
 		if (Route[i].takein){
 			taked = 1;
 			dis = 0;
+			busi_p.hour = Route[i].hour;
+			busi_p.minute = Route[i].minute;
+			busi_p.second = Route[i].second;
+			busi_p.longitude = Route[i].longitude;
+			busi_p.latitude = Route[i].latitude;
 		}
 	}
 	Now.outcome += 0.5 * Now.dis_All / 1000;
 	Now.profit = Now.income - Now.outcome;
 }
 
+void Pri_Business(){
+	int len = Business.size();
+	for (int i = 0; i < len; i++){
+		printf("###No.%d####################\n", i);
+		Business[i].priln();
+	}
+}
+
 void Pri(const int &name){
 	printf("Driver %d:\n", name);
-	printf("Income : %lf\n", Driver[name].income);
-	printf("outcome : %lf\n", Driver[name].outcome);
-	printf("profit : %lf\n", Driver[name].profit);
-	printf("dis_All : %lf\n", Driver[name].dis_All);
-	printf("dis_takeIn : %lf\n", Driver[name].dis_takeIn);
-	printf("dis_takeOff : %lf\n", Driver[name].dis_takeOff);
+	Driver[name].priln();
+	Pri_Business();
+	printf("-------------------------------\n");
 }
 
 int main(){
-	for (name = 6961; name <= 6961; name++){
+	freopen(File_std_Out, "w", stdout);
+	for (name = 6961; name <= 12843; name++){
 		File_prepare(name);
 		Read_in();
 		Data_clean();
