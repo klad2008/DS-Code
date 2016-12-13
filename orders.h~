@@ -6,8 +6,7 @@
 class orders{
 	public:
 	int time_start;
-	double s_longitude, s_latitude;
-	double t_longitude, t_latitude;
+	poi s, t, sr, tr;
 	void clear(){
 		memset(this, 0, sizeof(*this));
 	}
@@ -17,10 +16,14 @@ class orders{
 	void priln(int num){
 		printf("Order No. %d:\n", num);
 		printf("time_start : %d\n", this -> time_start);
-		printf("s_longitude : %lf\n", this -> s_longitude);
-		printf("s_latitude : %lf\n", this -> s_latitude);
-		printf("t_longitude : %lf\n", this -> t_longitude);
-		printf("t_latitude : %lf\n", this -> t_latitude);
+		printf("s_point : ");
+		(this -> s).priln();
+		printf("t_point : ");
+		(this -> t).priln();
+		printf("sr_point : ");
+		(this -> sr).priln();
+		printf("tr_point : ");
+		(this -> tr).priln();
 	}
 }order_p;
 

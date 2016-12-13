@@ -12,10 +12,7 @@ void Divide(const string &s_in){
 	++N;
 	Route[N].clear();
 	stream >> Route[N].id >> ch;
-	if (Route[N].id == 0){
-		N--;
-		return;
-	}
+	if (Route[N].id == 0){N--;return;}
 	stream >> Route[N].year >> ch;
 	stream >> Route[N].month >> ch;
 	stream >> Route[N].date;
@@ -26,12 +23,11 @@ void Divide(const string &s_in){
 	stream >> Route[N].longitude >> ch;
 	stream >> Route[N].latitude >> ch;
 	for (int i = 0; i < 5; i++)
-		stream >> xx >> ch;
+		stream >> ch >> ch;
 	stream >> Route[N].speed >> ch;
 	stream >> Route[N].direction >> ch;
 	stream >> Route[N].satellite >> ch;
-	stream >> ch;
-	stream >> ch;
+	stream >> ch >> ch;
 	if (ch == 'I'){
 		for (int i = 0; i < 9; i++)
 			stream >> ch;
@@ -41,42 +37,20 @@ void Divide(const string &s_in){
 	else Route[N].takeoff = Route[N].takein = 0;
 }
 
+string int2str(const int &x){
+	string s;
+	stringstream ss;
+	ss << x;
+	s = ss.str();
+	return s;
+}
+
 void File_prepare(const int name){
-	char File_In[110], File_Out[110];
-	char ss[10];
-	memset(File_In, 0, sizeof(File_In));
-	memset(File_Out, 0, sizeof(File_Out));
-	memset(ss, 0, sizeof(ss));
-	int r = 0;
-	for (int i = 0; i < 13; i++){
-		File_In[r] = File_Out[r] = File_Name_Pre[i];
-		r++;
-	}
-	int l = 0;
-	for (int x = name; x; x /= 10)
-		ss[l++] = x % 10 + '0';
-	for (int i = 0; i < l - i - 1; i++)
-		swap(ss[i], ss[l - i - 1]);
-	for (int i = 0; i < l; i++){
-		File_In[r] = File_Out[r] = ss[i];
-		r++;
-	}
-	for (int i = 0; i < 7; i++){
-		File_In[r] = File_Out[r] = File_Name_Suc[i];
-		r++;
-	}
-	File_In[r] = '.';
-	File_In[r+1] = 'c';
-	File_In[r+2] = 's';
-	File_In[r+3] = 'v';
-	File_Out[r] = '.';
-	File_Out[r+1] = 'o';
-	File_Out[r+2] = 'u';
-	File_Out[r+3] = 't';
-	r += 4;
-	File_In[r] = File_Out[r] = 0;
-	freopen(File_In, "r", stdin);
-//	freopen(File_Out, "w", stdout);
+	string File_In, File_Out;
+	File_In = "../Trajectory/[part-00000][" + int2str(name) + "]Sample.csv";
+	File_Out = "./[part-00000][" + int2str(name) + "]Sample.out";
+	freopen(File_In.c_str(), "r", stdin);
+//	freopen(File_Out.c_str(), "w", stdout);
 }
 
 void Read_Line(string &s){
@@ -89,7 +63,7 @@ void Read_Line(string &s){
 	}
 }
 
-void Read_in(){
+void Route_Read_in(){
 	string s;
 	Read_Line(s);
 	N = 0;
@@ -113,4 +87,4 @@ void Data_clean(){
 	N = len;
 }
 
-#endif 
+#endif

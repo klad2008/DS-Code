@@ -2,9 +2,6 @@
 #define ORDERS_CLEAN_H
 
 #include <bits/stdc++.h>
-#include "poi.h"
-#include "route.h"
-#include "orders.h"
 
 int orders_tot = 0;
 
@@ -36,9 +33,9 @@ void Orders_pick(){
 
 void orders_clean(){
 	freopen(File_orders_Out, "w", stdout);
-	for (name = 6961; name <= 12843; name++){
+	for (name = No_low; name <= No_high; name++){
 		File_prepare(name);
-		Read_in();
+		Route_Read_in();
 		Data_clean();
 		Orders_pick();
 	}

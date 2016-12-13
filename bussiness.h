@@ -7,17 +7,24 @@ using namespace std;
 class business_rec{
 	public:
 	int hour, minute, second;
+	int time_start;
 	double s_longitude, s_latitude;
 	double t_longitude, t_latitude;
 	double income, outcome, profit, dis_takeIn;
+	void get_time(){
+		this -> time_start = (this -> second);
+		this -> time_start += (this -> minute) * 60;
+		this -> time_start += (this -> hour) * 3600;
+	}
 	void priln(){
-		printf("hour : %d\n", this -> hour);
-		printf("minute : %d\n", this -> minute);
-		printf("second : %d\n", this -> second);
-		printf("s_longitude : %lf\n", this -> s_longitude);
-		printf("s_latitude : %lf\n", this -> s_latitude);
-		printf("t_longitude : %lf\n", this -> t_longitude);
-		printf("t_latitude : %lf\n", this -> t_latitude);
+//		printf("hour : %d\n", this -> hour);
+//		printf("minute : %d\n", this -> minute);
+//		printf("second : %d\n", this -> second);
+		printf("time_start : %d\n", this -> time_start);
+		printf("s_point : ");
+		(this -> s).println();
+		printf("t_point : ");
+		(this -> t).println();
 		printf("income : %lf\n", this -> income);
 		printf("outcome : %lf\n", this -> outcome);
 		printf("profit : %lf\n", this -> profit);

@@ -4,10 +4,11 @@
 
 
 void A2(){
-	freopen(File_std_Out, "w", stdout);
-	for (name = 6961; name <= 12843; name++){
+	freopen(File_A2_Out, "w", stdout);
+	Route_
+	for (name = No_low; name <= No_high; name++){
 		File_prepare(name);
-		Read_in();
+		Route_Read_in();
 		Data_clean();
 		A1_Work(name);
 		A1_Pri(name);

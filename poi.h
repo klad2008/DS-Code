@@ -12,6 +12,13 @@ class poi{
 		longitude = x;
 		latitude = y;
 	}
+	void print(){
+		printf("( %lf , %lf )", longitude, latitude);
+	}
+	void println(){
+		print();
+		printf("\n");
+	}
 };
 
 double dist(const poi &A, const poi &B){

@@ -1,5 +1,5 @@
-#ifndef POI
-#define POI
+#ifndef POI_H
+#define POI_H
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -11,6 +11,13 @@ class poi{
 	poi (const double &x, const double &y){
 		longitude = x;
 		latitude = y;
+	}
+	void print(){
+		printf("( %lf , %lf )", longitude, latitude);
+	}
+	void println(){
+		print();
+		printf("\n");
 	}
 };
 

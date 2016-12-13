@@ -27,6 +27,7 @@ void A1_Work(const int &name){
 				busi_p.dis_takeIn = dis;
 				busi_p.income = res;
 				busi_p.outcome = dis * 0.5 / 1000;
+				busi_p.profit = busi_p.income - busi_p.outcome;
 				Business.push_back(busi_p);
 				busi_p.clear();
 			}
@@ -39,11 +40,12 @@ void A1_Work(const int &name){
 			busi_p.hour = Route[i].hour;
 			busi_p.minute = Route[i].minute;
 			busi_p.second = Route[i].second;
+			busi_p.get_time();
 			busi_p.s_longitude = Route[i].longitude;
 			busi_p.s_latitude = Route[i].latitude;
 		}
 	}
-	Now.outcome += 0.5 * Now.dis_All / 1000;
+	Now.outcome = 0.5 * Now.dis_All / 1000;
 	Now.profit = Now.income - Now.outcome;
 }
 
@@ -55,10 +57,10 @@ void A1_Pri(const int &name){
 }
 
 void A1(){
-	freopen(File_std_Out, "w", stdout);
-	for (name = 6961; name <= 12843; name++){
+	freopen(File_A1_Out, "w", stdout);
+	for (name = No_low; name <= No_high; name++){
 		File_prepare(name);
-		Read_in();
+		Route_Read_in();
 		Data_clean();
 		A1_Work(name);
 		A1_Pri(name);
