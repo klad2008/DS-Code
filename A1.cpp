@@ -3,8 +3,12 @@ using namespace std;
 
 int name, N;
 
+const double Speed_limit = 200.0 / 3.6;
 const double eps = 1e-3;
 const double pi = acos(-1.0);
+
+const char File_Name_Pre[20] = "[part-00000][";
+const char File_Name_Suc[20] = "]Sample";
 
 class route_rec{
 	public:
@@ -12,7 +16,7 @@ class route_rec{
 	int year, month, date;
 	int hour, minute, second;
 	double longitude, latitude;
-	double speed, direction;
+	double speed, direction, satellite;
 	bool takein, takeoff;
 }Route[10010];
 
@@ -21,14 +25,25 @@ class driver_rec{
 	double income, outcome, profit, dis_All, dis_takeIn, dis_takeOff;
 }Driver[10010];
 
+void Merge(route_rec &A, route_rec B){
+	if (B.takein){
+		A.takein = 1;
+		A.takeoff = 0;
+	}
+	if (B.takeoff){
+		A.takein = 0;
+		A.takeoff = 1;
+	}
+}
+
 double dist(const route_rec &A, const route_rec &B){
 	double longitude_delta = fabs(A.longitude - B.longitude);
 	double latitude_delta = fabs(A.latitude - B.latitude);
-	double longitude_ave_arc = fabs(A.longitude + B.longitude) / 2 / 180 * pi;
-	double resx = longitude_delta * cos(longitude_ave_arc) * 6371 * 1000 * 2 * pi / 360;
-	double resy = latitude_delta * 6371 * 1000 * 2 * pi / 360;
+	double latitude_ave_arc = fabs(A.latitude + B.latitude) / 2 / 180 * pi;
+	double resx = longitude_delta * cos(latitude_ave_arc) * 6371 * 2 * pi / 360;
+	double resy = latitude_delta * 6371 * 2 * pi / 360;
 	double res = sqrt(resx * resx + resy * resy);
-	return res;
+	return res * 1000;
 }
 
 double dist_time(const route_rec &A, const route_rec &B){
@@ -43,35 +58,34 @@ double Speed(const route_rec &A, const route_rec &B){
 	return dist(A, B) / dist_time(A, B);
 }
 
-void int2str(const int &x, string &s_tmp){
-	stringstream stream;
-	stream << x;
-	stream >> s_tmp;
-}
-
 void Divide(const string &s_in){
 	stringstream stream;
-	string s;
 	char ch;
 	int xx;
 	
-	stream << s;
+	stream << s_in;
 	++N;
 	stream >> Route[N].id >> ch;
+	if (Route[N].id == 0){
+		N--;
+		return;
+	}
 	stream >> Route[N].year >> ch;
 	stream >> Route[N].month >> ch;
-	stream >> Route[N].date >> ch;
+	stream >> Route[N].date;
 	stream >> Route[N].hour >> ch;
 	stream >> Route[N].minute >> ch;
 	stream >> Route[N].second >> ch;
 	stream >> ch;
 	stream >> Route[N].longitude >> ch;
 	stream >> Route[N].latitude >> ch;
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 5; i++)
 		stream >> xx >> ch;
 	stream >> Route[N].speed >> ch;
 	stream >> Route[N].direction >> ch;
-	stream >> ch >> ch;
+	stream >> Route[N].satellite >> ch;
+	stream >> ch;
+	stream >> ch;
 	if (ch == 'I'){
 		for (int i = 0; i < 9; i++)
 			stream >> ch;
@@ -81,60 +95,110 @@ void Divide(const string &s_in){
 	else Route[N].takeoff = Route[N].takein = 0;
 }
 
-void File_prepare(){
-	char[110] File_In, File_Out;
-	File_In = "[part-00000][";
-	File_Out = "[part-00000][";
-	
-	int2str(name, name_s);
-	File_In =  + name_s + "]Sample.csv";
-	File_Out = "[part-00000][" + name_s + "]Sample.out";
+void File_prepare(const int name){
+	char File_In[110], File_Out[110];
+	char ss[10];
+	memset(File_In, 0, sizeof(File_In));
+	memset(File_Out, 0, sizeof(File_Out));
+	memset(ss, 0, sizeof(ss));
+	int r = 0;
+	for (int i = 0; i < 13; i++){
+		File_In[r] = File_Out[r] = File_Name_Pre[i];
+		r++;
+	}
+	int l = 0;
+	for (int x = name; x; x /= 10)
+		ss[l++] = x % 10 + '0';
+	for (int i = 0; i < l - i - 1; i++)
+		swap(ss[i], ss[l - i - 1]);
+	for (int i = 0; i < l; i++){
+		File_In[r] = File_Out[r] = ss[i];
+		r++;
+	}
+	for (int i = 0; i < 7; i++){
+		File_In[r] = File_Out[r] = File_Name_Suc[i];
+		r++;
+	}
+	File_In[r] = '.';
+	File_In[r+1] = 'c';
+	File_In[r+2] = 's';
+	File_In[r+3] = 'v';
+	File_Out[r] = '.';
+	File_Out[r+1] = 'o';
+	File_Out[r+2] = 'u';
+	File_Out[r+3] = 't';
+	r += 4;
+	File_In[r] = File_Out[r] = 0;
 	freopen(File_In, "r", stdin);
 	freopen(File_Out, "w", stdout);
 }
 
+void Read_Line(string &s){
+	s = "";
+	char ch = -1;
+	ch = getchar();
+	while (ch != '\n' && ch != -1){
+		s = s + ch;
+		ch = getchar();
+	}
+}
+
 void Read_in(){
-	cin >> s;
+	string s;
+	Read_Line(s);
 	N = 0;
-	while (cin >> s)
+	while (1){
+		Read_Line(s);
+		if (s == "")
+			break;
 		Divide(s);
+	}
 }
 
 void Data_clean(){
+	int len = 1;
 	for (int i = 2; i < N; i++)
-		if (Speed(Route[i - 1], Route[i]) > Speed_limit && 
-			Speed(Route[i], Route[i + 1]) > Speed_limit){
-			Route[i].longitude = (Route[i - 1].longitude + Route[i + 1].longitude) / 2;
-			Route[i].latitude = (Route[i - 1].latitude + Route[i + 1].latitude) / 2;
-		}
+		if (Speed(Route[len], Route[i]) > Speed_limit && Speed(Route[i], Route[i + 1]) > Speed_limit)
+			Merge(Route[len], Route[i]);
+		else if (dist_time(Route[i - 1], Route[i]) < 1)
+			Merge(Route[i - 1], Route[i]);
+		else Route[++len] = Route[i];
+	Route[++len] = Route[N];
+	N = len;
 }
 
 void Work(const int &name){
 	bool taked = 0;
 	double dis = 0;
-	driver_rec * Now;
-	(*Now).income = 0;
-	(*Now).outcome = 0;
-	(*Now).profit = 0;
-	(*Now).dis_All = 0;
-	(*Now).dis_takeIn = 0;
-	(*Now).dis_takeOff = 0;
+	driver_rec &Now = Driver[name];
+	Now.income = 0;
+	Now.outcome = 0;
+	Now.profit = 0;
+	Now.dis_All = 0;
+	Now.dis_takeIn = 0;
+	Now.dis_takeOff = 0;
 	double dd = 0;
+	int step = 0;
 	for (int i = 1; i <= N; i++){
 		if (i > 1) dd = dist(Route[i - 1], Route[i]);
 		else dd = 0;
-		(*Now).dis_All += dd;
+/*		double ssd = Speed(Route[i - 1], Route[i]);
+		if (dist_time(Route[i - 1], Route[i]) < 1)
+			ssd = 0;
+		if (i > 1 && fabs(ssd - Route[i].speed) > 10)
+			printf("= =");*/
 		if (taked == 1){
 			dis += dd;
-			(*Now).dis_takeIn += dd;
+			Now.dis_takeIn += dd;
 		}
-		else (*Now).dis_takeOff += dd;
-		(*Now).outcome += 0.5 * dis / 1000;
+		else Now.dis_takeOff += dd;
+		Now.dis_All += dd;
 		if (Route[i].takeoff){
+			step++;
 			if (dis > eps){
 				double res = 14;
 				if (dis > 3000) res = res + (dis - 3000) / 1000 * 2.4;
-				(*Now).income += res;
+				Now.income += res;
 			}
 			taked = 0;
 			dis = 0;
@@ -144,15 +208,23 @@ void Work(const int &name){
 			dis = 0;
 		}
 	}
+	Now.outcome += 0.5 * Now.dis_All / 1000;
+	Now.profit = Now.income - Now.outcome;
 }
 
 void Pri(const int &name){
-	printf("%lf\n")
+	printf("Driver %d:\n", name);
+	printf("Income : %lf\n", Driver[name].income);
+	printf("outcome : %lf\n", Driver[name].outcome);
+	printf("profit : %lf\n", Driver[name].profit);
+	printf("dis_All : %lf\n", Driver[name].dis_All);
+	printf("dis_takeIn : %lf\n", Driver[name].dis_takeIn);
+	printf("dis_takeOff : %lf\n", Driver[name].dis_takeOff);
 }
 
 int main(){
 	for (name = 6961; name <= 6961; name++){
-		File_prepare();
+		File_prepare(name);
 		Read_in();
 		Data_clean();
 		Work(name);
